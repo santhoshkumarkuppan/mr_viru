@@ -1,7 +1,7 @@
 import requests
 import pandas as pd
 import re
-#create a file ip.txt and add your ip iocs to check 
+#create a file hash.txt and add your iocs to check 
 with open('ip.txt', 'r') as file:
     ip_input = [line.rstrip('\n') for line in file]
 data_append=[]
@@ -18,7 +18,7 @@ for ip in ip_input:
         asn="private IP range"
     else:
         req_url=f"https://www.virustotal.com/api/v3/ip_addresses/{ip}"
-        api="your api key here"
+        api="your API key here"
         headers = {"accept": "application/json", "x-apikey":api }
         response = requests.get(req_url, headers=headers)
         ip_response=response.json()
@@ -35,9 +35,7 @@ for ip in ip_input:
                 verdict="suspicous"
             else:
                 verdict="malicious"
-            country=ip_response['data']['attributes']['country']
-            owner=ip_response['data']['attributes']['as_owner']
-            asn=ip_response['data']['attributes']['asn']        
+                        
         except:
             malicious="value not found"
             suspicious="value not found"
@@ -45,6 +43,14 @@ for ip in ip_input:
             harmless="value not found"
             Risk_score="Risck score not found"
             verdict="verdict not found"
+        try:
+            country=ip_response['data']['attributes']['country']
+            owner=ip_response['data']['attributes']['as_owner']
+            asn=ip_response['data']['attributes']['asn']  
+        except:
+            country="country info not found"
+            owner="owner info not found"
+            asn="asn not found"
     data_dict=dict(ip=ip,country=country,owner=owner,asn=asn,Risk_score=Risk_score,verdict=verdict)
     data_append.append(data_dict)
     final_out=pd.DataFrame.from_records(data_append)
